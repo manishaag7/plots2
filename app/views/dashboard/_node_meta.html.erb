@@ -25,7 +25,11 @@
 </div>
 
 <div class="card-meta-links">
+<<<<<<< HEAD
     <a href="<%= node.path %>#comments"><i class="fa fa-comment-o"></i> <%= node.comments_viewable_by(current_user).size %></a>
+=======
+    <a href="<%= node.path %>#comments"><i class="fa fa-comment-o"></i> <%= node.comments_viewable_by(current_user).length %></a>
+>>>>>>> 672d63ab11c2159e28d2cc502c47a3b3c83730b9
     | <a aria-label="Link to note" href="/n/<%= node.id %>"><i class="fa fa-link"></i></a>
     | <span><i class="fa fa-eye"></i> <%= number_with_delimiter(node.views) %></span>
     | <span><i style="<% if node.likes > 0 %>color:#db4;<% end %>" class="fa fa-star-o"></i> <%= node.likes %></span>
