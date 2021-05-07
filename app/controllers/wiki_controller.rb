@@ -117,7 +117,7 @@ class WikiController < ApplicationController
       flash[:warning] = "This page is <a href='/wiki/power-tags#Locking'>locked</a>, and only <a href='/wiki/moderators'>moderators</a> can edit it."
       redirect_to @node.path
     elsif current_user &.first_time_poster
-      flash[:notice] = "Please post a question or other content before editing the wiki. Click <a href='https://publiclab.org/notes/tester/04-23-2016/new-moderation-system-for-first-time-posters'>here</a> to learn why."
+      flash[:notice] = "You can create the wiki once your research note/question is approved by moderators. Click <a href='https://publiclab.org/notes/tester/04-23-2016/new-moderation-system-for-first-time-posters'>here</a> to learn why."
       redirect_to Node.find_wiki(params[:id]).path
       return
     end
@@ -135,7 +135,7 @@ class WikiController < ApplicationController
   def new
     @revision = Revision.new
     if current_user &.first_time_poster
-      flash[:notice] = "Please post a question or other content before editing the wiki. Click <a href='https://publiclab.org/notes/tester/04-23-2016/new-moderation-system-for-first-time-posters'>here</a> to learn why."
+      flash[:notice] = "You can create the wiki once your research note/question is approved by moderators. Click <a href='https://publiclab.org/notes/tester/04-23-2016/new-moderation-system-for-first-time-posters'>here</a> to learn why."
       redirect_to '/'
       return
     end
@@ -341,7 +341,7 @@ class WikiController < ApplicationController
       .references(:node_revisions)
       .group('node_revisions.nid, node_revisions.vid')
       .order(order_string)
-      .where("node_revisions.status = 1 AND node.status = 1 AND type = 'page'"))
+      .where("node_revisions.status = 1 AND node.status = 1 AND type = 'page'"), items: 10)
 
     @paginated = true
   end
@@ -353,7 +353,7 @@ class WikiController < ApplicationController
       .references(:node_revisions)
       .group('node_revisions.nid, node_revisions.vid')
       .order('node_revisions.timestamp ASC')
-      .where("node_revisions.status = 1 AND node.status = 1 AND type = 'page'"))
+      .where("node_revisions.status = 1 AND node.status = 1 AND type = 'page'"), items: 10)
 
     @paginated = true
     render template: 'wiki/index'

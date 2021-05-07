@@ -31,6 +31,30 @@ class WikiControllerTest < ActionController::TestCase
     assert assigns(:wikis).each_cons(2).all?{|i,j| "j.node_revisions.title" >= "i.node_revisions.title" }
   end
 
+  test 'should paginate the wikis' do
+    12.times{
+    post :create,
+         params: {
+           uid:   users(:bob).id,
+           title: 'Test',
+           body:  'This is fascinating documentation about balloon mapping.',
+           tags:  'balloon-mapping'
+         }
+    }
+    get :index
+    wikis = assigns(:wikis)
+    assert wikis.size==10
+  end
+
+  test 'should sort by last edited' do
+    get :index, params: { sort: "last_edited" }
+    wikis = assigns(:wikis)
+    wiki1 = wikis.order(changed: :desc).first
+    wiki2 = wikis.order(changed: :desc).reverse.first
+    assert_equal(wikis.first.title, wiki1.title)
+    assert_equal(wikis.last.title, wiki2.title)
+  end
+
   test 'should get wiki stale pages' do
     get :stale
 
@@ -169,7 +193,7 @@ class WikiControllerTest < ActionController::TestCase
         id: 'chicago'
         }
 
-    assert_equal flash[:notice], "Please post a question or other content before editing the wiki. Click <a href='https://publiclab.org/notes/tester/04-23-2016/new-moderation-system-for-first-time-posters'>here</a> to learn why."
+    assert_equal flash[:notice], "You can create the wiki once your research note/question is approved by moderators. Click <a href='https://publiclab.org/notes/tester/04-23-2016/new-moderation-system-for-first-time-posters'>here</a> to learn why."
     assert_redirected_to nodes(:place).path
   end
 

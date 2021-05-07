@@ -95,7 +95,7 @@
             <% emoji_names.each do |e| %>
               <% capitalized_emoji_name = e.split("-").map(&:capitalize).join %>
               <% str = "/comment/like?comment_id=#{comment.cid}&user_id=#{current_user.uid}&emoji_type=#{capitalized_emoji_name}" %>               
-              <%= link_to str, data: { method: "post", remote: true }, style: "margin: 6px;" do %>                     
+              <%= link_to str, data: { method: "post", remote: true }, style: "margin: 6px;", class: "emoji-btn" do %>                     
                 <img alt="React to post" class="emoji grow" height="20" width="20" src="<%= emoji_image_map[e] %>">                         
               <% end %>
             <% end %>
@@ -132,6 +132,13 @@
         }
       });
     });
+
+    $('.emoji-btn').click(function() {
+      setTimeout(() => {
+        $('#emoji-dropdown').removeClass('show');
+        $('#dropdownMenuButton').attr('aria-expanded', 'false');
+      }, 5000);
+    });
   </script>
 
   <div style="border: 1px solid #e7e7e7;padding: 36px;" id="c<%= comment.cid %>show">
@@ -160,9 +167,20 @@
 
     <% if comment.reply_to.nil? %>
       <% comment.replied_comments.order("timestamp ASC").each do |replied_comment| %>
-        <%= render :partial => "notes/comment", :locals => {:comment => replied_comment} %>
+        <% if logged_in_as(['admin','moderator'])%>
+          <% if replied_comment.status == 4 || replied_comment.status == 1 %>
+            <%= render :partial => "notes/comment", :locals => {:comment => replied_comment} %>
+          <% end %>
+        <% elsif current_user && current_user.id = replied_comment.author.id %>
+          <% if replied_comment.status == 1 || (replied_comment.status == 4 && replied_comment.uid = current_user.id) %>
+            <%= render :partial => "notes/comment", :locals => {:comment => replied_comment} %>
+          <% end %>
+        <% else %>
+          <% if replied_comment.status == 1 %>
+            <%= render :partial => "notes/comment", :locals => {:comment => replied_comment} %>
+          <% end %>
+        <% end %>
       <% end %>
-
       <p style="color: #006dcc; cursor: pointer; user-select: none;" id="comment-<%= comment.cid %>-reply-toggle">Reply to this comment...</p>
       <div id="comment-<%= comment.cid %>-reply" style="margin-top: 30px;display: none;">
         <div id="comment-<%= comment.cid %>-reply-section">

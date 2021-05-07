@@ -206,7 +206,6 @@ Plots2::Application.routes.draw do
   get 'tags/related(/:id)' => 'tag#related'
   get 'tags/:id' => redirect('/tag/:id')
   post 'tag/suggested/:id' => 'tag#suggested'
-  get 'tag/parent' => 'tag#add_parent'
   get 'tag/author/:id.json' => 'tag#author'
   post 'tag/create/:nid' => 'tag#create'
   get 'tag/create/:nid' => 'tag#create'
@@ -372,6 +371,11 @@ Plots2::Application.routes.draw do
   post '/comment/like' => 'comment#like_comment'
   get '/comment/create/:id' => 'comment#create'
   post 'comment/create/:id' => 'comment#create'
+
+  # routes for React commenting system
+  post 'comment/react/create/:id' => 'comment#react_create'
+  post 'comment/react/delete/:id' => 'comment#react_delete'
+  post 'comment/react/update/:id' => 'comment#react_update'
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
